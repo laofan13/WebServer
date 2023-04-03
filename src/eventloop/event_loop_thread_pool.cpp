@@ -1,7 +1,7 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "EventLoopThreadPool.h"
+#include "eventloop/event_loop_thread_pool.hpp"
 
+namespace webserver {
+  
 EventLoopThreadPool::EventLoopThreadPool(EventLoop *baseLoop, int numThreads)
     : baseLoop_(baseLoop), started_(false), numThreads_(numThreads), next_(0) {
   if (numThreads_ <= 0) {
@@ -30,3 +30,5 @@ EventLoop *EventLoopThreadPool::getNextLoop() {
   }
   return loop;
 }
+
+} // namespace webserver

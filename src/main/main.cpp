@@ -1,11 +1,11 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
+#include "server/server.hpp"
+
+#include "log/log.hpp"
+
 #include <getopt.h>
 #include <string>
-#include "EventLoop.h"
-#include "Server.h"
-#include "base/Logging.h"
 
+using namespace webserver;
 
 int main(int argc, char *argv[]) {
   int threadNum = 4;
@@ -37,13 +37,13 @@ int main(int argc, char *argv[]) {
         break;
     }
   }
-  Logger::setLogFileName(logPath);
+  webserver::Logger::setLogFileName(logPath);
 // STL库在多线程上应用
 #ifndef _PTHREADS
   LOG << "_PTHREADS is not defined !";
 #endif
-  EventLoop mainLoop;
-  Server myHTTPServer(&mainLoop, threadNum, port);
+  webserver::EventLoop mainLoop;
+  webserver::Server myHTTPServer(&mainLoop, threadNum, port);
   myHTTPServer.start();
   mainLoop.loop();
   return 0;

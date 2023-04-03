@@ -1,16 +1,16 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "HttpData.h"
+#include "network/http_data.hpp"
+
+#include "network/channel.hpp"
+#include "eventloop/event_loop.hpp"
+#include "common/util.hpp"
+
+#include "time.h"
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <iostream>
-#include "Channel.h"
-#include "EventLoop.h"
-#include "Util.h"
-#include "time.h"
 
-using namespace std;
+namespace webserver {
 
 pthread_once_t MimeType::once_control = PTHREAD_ONCE_INIT;
 std::unordered_map<std::string, std::string> MimeType::mime;
@@ -137,7 +137,7 @@ void HttpData::reset() {
   headers_.clear();
   // keepAlive_ = false;
   if (timer_.lock()) {
-    shared_ptr<TimerNode> my_timer(timer_.lock());
+    std::shared_ptr<TimerNode> my_timer(timer_.lock());
     my_timer->clearReq();
     timer_.reset();
   }
@@ -146,7 +146,7 @@ void HttpData::reset() {
 void HttpData::seperateTimer() {
   // cout << "seperateTimer" << endl;
   if (timer_.lock()) {
-    shared_ptr<TimerNode> my_timer(timer_.lock());
+    std::shared_ptr<TimerNode> my_timer(timer_.lock());
     my_timer->clearReq();
     timer_.reset();
   }
@@ -318,15 +318,15 @@ void HttpData::handleConn() {
 }
 
 URIState HttpData::parseURI() {
-  string &str = inBuffer_;
-  string cop = str;
+  std::string &str = inBuffer_;
+  std::string cop = str;
   // 读到完整的请求行再开始解析请求
   size_t pos = str.find('\r', nowReadPos_);
   if (pos < 0) {
     return PARSE_URI_AGAIN;
   }
   // 去掉请求行所占的空间，节省空间
-  string request_line = str.substr(0, pos);
+  std::string request_line = str.substr(0, pos);
   if (str.size() > pos + 1)
     str = str.substr(pos + 1);
   else
@@ -382,7 +382,7 @@ URIState HttpData::parseURI() {
     if (request_line.size() - pos <= 3)
       return PARSE_URI_ERROR;
     else {
-      string ver = request_line.substr(pos + 1, 3);
+      std::string ver = request_line.substr(pos + 1, 3);
       if (ver == "1.0")
         HTTPVersion_ = HTTP_10;
       else if (ver == "1.1")
@@ -395,7 +395,7 @@ URIState HttpData::parseURI() {
 }
 
 HeaderState HttpData::parseHeaders() {
-  string &str = inBuffer_;
+  std::string &str = inBuffer_;
   int key_start = -1, key_end = -1, value_start = -1, value_end = -1;
   int now_read_line_begin = 0;
   bool notFinish = true;
@@ -442,8 +442,8 @@ HeaderState HttpData::parseHeaders() {
       case H_CR: {
         if (str[i] == '\n') {
           hState_ = H_LF;
-          string key(str.begin() + key_start, str.begin() + key_end);
-          string value(str.begin() + value_start, str.begin() + value_end);
+          std::string key(str.begin() + key_start, str.begin() + key_end);
+          std::string value(str.begin() + value_start, str.begin() + value_end);
           headers_[key] = value;
           now_read_line_begin = i;
         } else
@@ -505,21 +505,21 @@ AnalysisState HttpData::analysisRequest() {
     // imencode(".png", res, data_encode);
     // header += string("Content-length: ") + to_string(data_encode.size()) +
     // "\r\n\r\n";
-    // outBuffer_ += header + string(data_encode.begin(), data_encode.end());
+    // outBuffer_ += header + std::string(data_encode.begin(), data_encode.end());
     // inBuffer_ = inBuffer_.substr(length);
     // return ANALYSIS_SUCCESS;
   } else if (method_ == METHOD_GET || method_ == METHOD_HEAD) {
-    string header;
+    std::string header;
     header += "HTTP/1.1 200 OK\r\n";
     if (headers_.find("Connection") != headers_.end() &&
         (headers_["Connection"] == "Keep-Alive" ||
          headers_["Connection"] == "keep-alive")) {
       keepAlive_ = true;
-      header += string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
-                to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
+      header += std::string("Connection: Keep-Alive\r\n") + "Keep-Alive: timeout=" +
+                std::to_string(DEFAULT_KEEP_ALIVE_TIME) + "\r\n";
     }
     int dot_pos = fileName_.find('.');
-    string filetype;
+    std::string filetype;
     if (dot_pos < 0)
       filetype = MimeType::getMime("default");
     else
@@ -533,12 +533,12 @@ AnalysisState HttpData::analysisRequest() {
     }
     if (fileName_ == "favicon.ico") {
       header += "Content-Type: image/png\r\n";
-      header += "Content-Length: " + to_string(sizeof favicon) + "\r\n";
+      header += "Content-Length: " + std::to_string(sizeof favicon) + "\r\n";
       header += "Server: LinYa's Web Server\r\n";
 
       header += "\r\n";
       outBuffer_ += header;
-      outBuffer_ += string(favicon, favicon + sizeof favicon);
+      outBuffer_ += std::string(favicon, favicon + sizeof favicon);
       ;
       return ANALYSIS_SUCCESS;
     }
@@ -550,7 +550,7 @@ AnalysisState HttpData::analysisRequest() {
       return ANALYSIS_ERROR;
     }
     header += "Content-Type: " + filetype + "\r\n";
-    header += "Content-Length: " + to_string(sbuf.st_size) + "\r\n";
+    header += "Content-Length: " + std::to_string(sbuf.st_size) + "\r\n";
     header += "Server: LinYa's Web Server\r\n";
     // 头部结束
     header += "\r\n";
@@ -573,7 +573,7 @@ AnalysisState HttpData::analysisRequest() {
       return ANALYSIS_ERROR;
     }
     char *src_addr = static_cast<char *>(mmapRet);
-    outBuffer_ += string(src_addr, src_addr + sbuf.st_size);
+    outBuffer_ += std::string(src_addr, src_addr + sbuf.st_size);
     ;
     munmap(mmapRet, sbuf.st_size);
     return ANALYSIS_SUCCESS;
@@ -581,19 +581,19 @@ AnalysisState HttpData::analysisRequest() {
   return ANALYSIS_ERROR;
 }
 
-void HttpData::handleError(int fd, int err_num, string short_msg) {
+void HttpData::handleError(int fd, int err_num, std::string short_msg) {
   short_msg = " " + short_msg;
   char send_buff[4096];
-  string body_buff, header_buff;
+  std::string body_buff, header_buff;
   body_buff += "<html><title>哎~出错了</title>";
   body_buff += "<body bgcolor=\"ffffff\">";
-  body_buff += to_string(err_num) + short_msg;
+  body_buff += std::to_string(err_num) + short_msg;
   body_buff += "<hr><em> LinYa's Web Server</em>\n</body></html>";
 
-  header_buff += "HTTP/1.1 " + to_string(err_num) + short_msg + "\r\n";
+  header_buff += "HTTP/1.1 " + std::to_string(err_num) + short_msg + "\r\n";
   header_buff += "Content-Type: text/html\r\n";
   header_buff += "Connection: Close\r\n";
-  header_buff += "Content-Length: " + to_string(body_buff.size()) + "\r\n";
+  header_buff += "Content-Length: " + std::to_string(body_buff.size()) + "\r\n";
   header_buff += "Server: LinYa's Web Server\r\n";
   ;
   header_buff += "\r\n";
@@ -606,7 +606,7 @@ void HttpData::handleError(int fd, int err_num, string short_msg) {
 
 void HttpData::handleClose() {
   connectionState_ = H_DISCONNECTED;
-  shared_ptr<HttpData> guard(shared_from_this());
+  std::shared_ptr<HttpData> guard(shared_from_this());
   loop_->removeFromPoller(channel_);
 }
 
@@ -614,3 +614,5 @@ void HttpData::newEvent() {
   channel_->setEvents(DEFAULT_EVENT);
   loop_->addToPoller(channel_, DEFAULT_EXPIRED_TIME);
 }
+
+} // namespace webserver

@@ -1,13 +1,13 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "EventLoop.h"
+#include "eventloop/event_loop.hpp"
+
+#include "common/util.hpp"
+#include "log/log.hpp"
+
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 #include <iostream>
-#include "Util.h"
-#include "base/Logging.h"
 
-using namespace std;
+namespace webserver {
 
 __thread EventLoop* t_loopInThisThread = 0;
 
@@ -27,7 +27,7 @@ EventLoop::EventLoop()
       quit_(false),
       eventHandling_(false),
       callingPendingFunctors_(false),
-      threadId_(CurrentThread::tid()),
+      threadId_(tid()),
       pwakeupChannel_(new Channel(this, wakeupFd_)) {
   if (t_loopInThisThread) {
     // LOG << "Another EventLoop " << t_loopInThisThread << " exists in this
@@ -37,8 +37,8 @@ EventLoop::EventLoop()
   }
   // pwakeupChannel_->setEvents(EPOLLIN | EPOLLET | EPOLLONESHOT);
   pwakeupChannel_->setEvents(EPOLLIN | EPOLLET);
-  pwakeupChannel_->setReadHandler(bind(&EventLoop::handleRead, this));
-  pwakeupChannel_->setConnHandler(bind(&EventLoop::handleConn, this));
+  pwakeupChannel_->setReadHandler(std::bind(&EventLoop::handleRead, this));
+  pwakeupChannel_->setConnHandler(std::bind(&EventLoop::handleConn, this));
   poller_->epoll_add(pwakeupChannel_, 0);
 }
 
@@ -128,3 +128,5 @@ void EventLoop::quit() {
     wakeup();
   }
 }
+
+} // namespace webserver

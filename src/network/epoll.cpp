@@ -1,26 +1,26 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "Epoll.h"
+#include "network/epoll.hpp"
+
+#include "common/util.hpp"
+#include "log/log.hpp"
+
 #include <assert.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
+
 #include <deque>
 #include <queue>
-#include "Util.h"
-#include "base/Logging.h"
-
-
-#include <arpa/inet.h>
 #include <iostream>
-using namespace std;
+
+namespace webserver {
 
 const int EVENTSNUM = 4096;
 const int EPOLLWAIT_TIME = 10000;
 
-typedef shared_ptr<Channel> SP_Channel;
+typedef std::shared_ptr<Channel> SP_Channel;
 
 Epoll::Epoll() : epollFd_(epoll_create1(EPOLL_CLOEXEC)), events_(EVENTSNUM) {
   assert(epollFd_ > 0);
@@ -113,9 +113,10 @@ std::vector<SP_Channel> Epoll::getEventsRequest(int events_num) {
 }
 
 void Epoll::add_timer(SP_Channel request_data, int timeout) {
-  shared_ptr<HttpData> t = request_data->getHolder();
+  std::shared_ptr<HttpData> t = request_data->getHolder();
   if (t)
     timerManager_.addTimer(t, timeout);
   else
     LOG << "timer add fail";
 }
+} // namespace webserver

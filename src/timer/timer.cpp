@@ -1,9 +1,10 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "Timer.h"
+#include "timer/timer.hpp"
+
 #include <sys/time.h>
 #include <unistd.h>
 #include <queue>
+
+namespace webserver {
 
 TimerNode::TimerNode(std::shared_ptr<HttpData> requestData, int timeout)
     : deleted_(false), SPHttpData(requestData) {
@@ -80,3 +81,5 @@ void TimerManager::handleExpiredEvent() {
       break;
   }
 }
+
+} // namespace webserver

@@ -1,12 +1,15 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "Server.h"
+#include "server/server.hpp"
+
+#include "common/util.hpp"
+#include "log/log.hpp"
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+
 #include <functional>
-#include "Util.h"
-#include "base/Logging.h"
+
+namespace webserver {
 
 Server::Server(EventLoop *loop, int threadNum, int port)
     : loop_(loop),
@@ -28,8 +31,8 @@ void Server::start() {
   eventLoopThreadPool_->start();
   // acceptChannel_->setEvents(EPOLLIN | EPOLLET | EPOLLONESHOT);
   acceptChannel_->setEvents(EPOLLIN | EPOLLET);
-  acceptChannel_->setReadHandler(bind(&Server::handNewConn, this));
-  acceptChannel_->setConnHandler(bind(&Server::handThisConn, this));
+  acceptChannel_->setReadHandler(std::bind(&Server::handNewConn, this));
+  acceptChannel_->setConnHandler(std::bind(&Server::handThisConn, this));
   loop_->addToPoller(acceptChannel_, 0);
   started_ = true;
 }
@@ -69,9 +72,11 @@ void Server::handNewConn() {
     setSocketNodelay(accept_fd);
     // setSocketNoLinger(accept_fd);
 
-    shared_ptr<HttpData> req_info(new HttpData(loop, accept_fd));
+    std::shared_ptr<HttpData> req_info(new HttpData(loop, accept_fd));
     req_info->getChannel()->setHolder(req_info);
     loop->queueInLoop(std::bind(&HttpData::newEvent, req_info));
   }
   acceptChannel_->setEvents(EPOLLIN | EPOLLET);
 }
+
+} // namespace webserver

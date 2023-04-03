@@ -1,18 +1,15 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
-#include "Channel.h"
+#include "network/channel.hpp"
+
+#include "network/epoll.hpp"
+#include "eventloop/event_loop.hpp"
+#include "common/util.hpp"
 
 #include <unistd.h>
 #include <cstdlib>
 #include <iostream>
-
 #include <queue>
 
-#include "Epoll.h"
-#include "EventLoop.h"
-#include "Util.h"
-
-using namespace std;
+namespace webserver {
 
 Channel::Channel(EventLoop *loop)
     : loop_(loop), events_(0), lastEvents_(0), fd_(0) {}
@@ -45,3 +42,5 @@ void Channel::handleConn() {
     connHandler_();
   }
 }
+
+} // namespace webserver

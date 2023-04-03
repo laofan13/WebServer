@@ -2,7 +2,7 @@
 // @Email xxbbb@vip.qq.com
 #include "../Logging.h"
 #include "../Thread.h"
-#include <string>
+#include <std::string>
 #include <unistd.h>
 #include <vector>
 #include <memory>
@@ -33,7 +33,7 @@ void type_test()
     LOG << (unsigned long long) 1;
     LOG << 'c';
     LOG << "abcdefg";
-    LOG << string("This is a string");
+    LOG << std::string("This is a std::string");
 }
 
 void stressing_single_thread()
@@ -67,7 +67,7 @@ void other()
 {
     // 1 line
     cout << "----------other test-----------" << endl;
-    LOG << "fddsa" << 'c' << 0 << 3.666 << string("This is a string");
+    LOG << "fddsa" << 'c' << 0 << 3.666 << std::string("This is a std::string");
 }
 
 

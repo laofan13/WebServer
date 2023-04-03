@@ -1,9 +1,6 @@
-// @Author Lin Ya
-// @Email xxbbb@vip.qq.com
+#include "eventloop/thread_pool.hpp"
 
-
-// This file has not been used
-#include "ThreadPool.h"
+namespace webserver {
 
 pthread_mutex_t ThreadPool::lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t ThreadPool::notify = PTHREAD_COND_INITIALIZER;
@@ -176,3 +173,5 @@ void *ThreadPool::threadpool_thread(void *args)
     pthread_exit(NULL);
     return(NULL);
 }
+
+} // namespace webserver
