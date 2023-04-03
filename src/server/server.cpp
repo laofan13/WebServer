@@ -11,10 +11,10 @@
 
 namespace webserver {
 
-Server::Server(EventLoop *loop, int threadNum, int port)
+Server::Server(event *loop, int threadNum, int port)
     : loop_(loop),
       threadNum_(threadNum),
-      eventLoopThreadPool_(new EventLoopThreadPool(loop_, threadNum)),
+      eventThreadPool_(new eventThreadPool(loop_, threadNum)),
       started_(false),
       acceptChannel_(new Channel(loop_)),
       port_(port),
@@ -28,7 +28,7 @@ Server::Server(EventLoop *loop, int threadNum, int port)
 }
 
 void Server::start() {
-  eventLoopThreadPool_->start();
+  eventThreadPool_->start();
   // acceptChannel_->setEvents(EPOLLIN | EPOLLET | EPOLLONESHOT);
   acceptChannel_->setEvents(EPOLLIN | EPOLLET);
   acceptChannel_->setReadHandler(std::bind(&Server::handNewConn, this));
@@ -44,7 +44,7 @@ void Server::handNewConn() {
   int accept_fd = 0;
   while ((accept_fd = accept(listenFd_, (struct sockaddr *)&client_addr,
                              &client_addr_len)) > 0) {
-    EventLoop *loop = eventLoopThreadPool_->getNextLoop();
+    event *loop = eventThreadPool_->getNextLoop();
     LOG << "New connection from " << inet_ntoa(client_addr.sin_addr) << ":"
         << ntohs(client_addr.sin_port);
     // cout << "new connection" << endl;

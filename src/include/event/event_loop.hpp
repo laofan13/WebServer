@@ -1,7 +1,7 @@
 //===----------------------------------------------------------------------===//
 //                         WebServer
 //
-// eventloop/event_loop.hpp
+// event/event_loop.hpp
 //
 //
 //===----------------------------------------------------------------------===//
@@ -21,11 +21,11 @@
 
 namespace webserver {
 
-class EventLoop {
+class event {
  public:
   typedef std::function<void()> Functor;
-  EventLoop();
-  ~EventLoop();
+  event();
+  ~event();
   void loop();
   void quit();
   void runInLoop(Functor&& cb);

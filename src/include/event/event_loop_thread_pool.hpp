@@ -1,14 +1,14 @@
 //===----------------------------------------------------------------------===//
 //                         WebServer
 //
-// eventloop/event_loop_thread_pool.hpp
+// event/event_loop_thread_pool.hpp
 //
 //
 //===----------------------------------------------------------------------===//
 #pragma once
 
 #include "log/log.hpp"
-#include "eventloop/event_loop_thread.hpp"
+#include "event/event_loop_thread.hpp"
 #include "common/noncopyable.hpp"
 
 #include <memory>
@@ -16,22 +16,22 @@
 
 namespace webserver {
 
-class EventLoopThreadPool : noncopyable {
+class eventThreadPool : noncopyable {
  public:
-  EventLoopThreadPool(EventLoop* baseLoop, int numThreads);
+  eventThreadPool(event* baseLoop, int numThreads);
 
-  ~EventLoopThreadPool() { LOG << "~EventLoopThreadPool()"; }
+  ~eventThreadPool() { LOG << "~eventThreadPool()"; }
   void start();
 
-  EventLoop* getNextLoop();
+  event* getNextLoop();
 
  private:
-  EventLoop* baseLoop_;
+  event* baseLoop_;
   bool started_;
   int numThreads_;
   int next_;
-  std::vector<std::shared_ptr<EventLoopThread>> threads_;
-  std::vector<EventLoop*> loops_;
+  std::vector<std::shared_ptr<eventThread>> threads_;
+  std::vector<event*> loops_;
 };
 
 } // namespace webserver

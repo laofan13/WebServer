@@ -1,17 +1,17 @@
-#include "eventloop/event_loop_thread.hpp"
+#include "event/event_loop_thread.hpp"
 
 #include <functional>
 
 namespace webserver {
 
-EventLoopThread::EventLoopThread()
+eventThread::eventThread()
     : loop_(NULL),
       exiting_(false),
-      thread_(std::bind(&EventLoopThread::threadFunc, this), "EventLoopThread"),
+      thread_(std::bind(&eventThread::threadFunc, this), "eventThread"),
       mutex_(),
       cond_(mutex_) {}
 
-EventLoopThread::~EventLoopThread() {
+eventThread::~eventThread() {
   exiting_ = true;
   if (loop_ != NULL) {
     loop_->quit();
@@ -19,7 +19,7 @@ EventLoopThread::~EventLoopThread() {
   }
 }
 
-EventLoop* EventLoopThread::startLoop() {
+event* eventThread::startLoop() {
   assert(!thread_.started());
   thread_.start();
   {
@@ -30,8 +30,8 @@ EventLoop* EventLoopThread::startLoop() {
   return loop_;
 }
 
-void EventLoopThread::threadFunc() {
-  EventLoop loop;
+void eventThread::threadFunc() {
+  event loop;
 
   {
     MutexLockGuard lock(mutex_);

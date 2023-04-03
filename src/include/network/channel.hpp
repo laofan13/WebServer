@@ -18,13 +18,13 @@
 
 
 namespace webserver {
-class EventLoop;
+class event;
 class HttpData;
 
 class Channel {
  private:
   typedef std::function<void()> CallBack;
-  EventLoop *loop_;
+  event *loop_;
   int fd_;
   __uint32_t events_;
   __uint32_t revents_;
@@ -44,8 +44,8 @@ class Channel {
   CallBack connHandler_;
 
  public:
-  Channel(EventLoop *loop);
-  Channel(EventLoop *loop, int fd);
+  Channel(event *loop);
+  Channel(event *loop, int fd);
   ~Channel();
   int getFd();
   void setFd(int fd);

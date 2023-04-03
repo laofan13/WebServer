@@ -1,7 +1,7 @@
 #include "network/http_data.hpp"
 
 #include "network/channel.hpp"
-#include "eventloop/event_loop.hpp"
+#include "event/event_loop.hpp"
 #include "common/util.hpp"
 
 #include "time.h"
@@ -109,7 +109,7 @@ std::string MimeType::getMime(const std::string &suffix) {
     return mime[suffix];
 }
 
-HttpData::HttpData(EventLoop *loop, int connfd)
+HttpData::HttpData(event *loop, int connfd)
     : loop_(loop),
       channel_(new Channel(loop, connfd)),
       fd_(connfd),

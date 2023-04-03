@@ -20,7 +20,7 @@
 
 namespace webserver {
   
-class EventLoop;
+class event;
 class TimerNode;
 class Channel;
 
@@ -80,7 +80,7 @@ class MimeType {
 
 class HttpData : public std::enable_shared_from_this<HttpData> {
  public:
-  HttpData(EventLoop *loop, int connfd);
+  HttpData(event *loop, int connfd);
   ~HttpData() { close(fd_); }
   void reset();
   void seperateTimer();
@@ -89,12 +89,12 @@ class HttpData : public std::enable_shared_from_this<HttpData> {
     timer_ = mtimer;
   }
   std::shared_ptr<Channel> getChannel() { return channel_; }
-  EventLoop *getLoop() { return loop_; }
+  event *getLoop() { return loop_; }
   void handleClose();
   void newEvent();
 
  private:
-  EventLoop *loop_;
+  event *loop_;
   std::shared_ptr<Channel> channel_;
   int fd_;
   std::string inBuffer_;

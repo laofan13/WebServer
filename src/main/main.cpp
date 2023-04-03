@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 #ifndef _PTHREADS
   LOG << "_PTHREADS is not defined !";
 #endif
-  webserver::EventLoop mainLoop;
+  webserver::event mainLoop;
   webserver::Server myHTTPServer(&mainLoop, threadNum, port);
   myHTTPServer.start();
   mainLoop.loop();

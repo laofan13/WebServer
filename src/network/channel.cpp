@@ -1,7 +1,7 @@
 #include "network/channel.hpp"
 
 #include "network/epoll.hpp"
-#include "eventloop/event_loop.hpp"
+#include "event/event_loop.hpp"
 #include "common/util.hpp"
 
 #include <unistd.h>
@@ -11,10 +11,10 @@
 
 namespace webserver {
 
-Channel::Channel(EventLoop *loop)
+Channel::Channel(event *loop)
     : loop_(loop), events_(0), lastEvents_(0), fd_(0) {}
 
-Channel::Channel(EventLoop *loop, int fd)
+Channel::Channel(event *loop, int fd)
     : loop_(loop), fd_(fd), events_(0), lastEvents_(0) {}
 
 Channel::~Channel() {

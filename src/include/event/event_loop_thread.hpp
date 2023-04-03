@@ -1,13 +1,13 @@
 //===----------------------------------------------------------------------===//
 //                         WebServer
 //
-// eventloop/event_loop_thread.hpp
+// event/event_loop_thread.hpp
 //
 //
 //===----------------------------------------------------------------------===//
 #pragma once
 
-#include "eventloop/event_loop.hpp"
+#include "event/event_loop.hpp"
 #include "common/condition.hpp"
 #include "common/mutex_lock.hpp"
 #include "common/thread.hpp"
@@ -15,15 +15,15 @@
 
 namespace webserver {
 
-class EventLoopThread : noncopyable {
+class eventThread : noncopyable {
  public:
-  EventLoopThread();
-  ~EventLoopThread();
-  EventLoop* startLoop();
+  eventThread();
+  ~eventThread();
+  event* startLoop();
 
  private:
   void threadFunc();
-  EventLoop* loop_;
+  event* loop_;
   bool exiting_;
   Thread thread_;
   MutexLock mutex_;

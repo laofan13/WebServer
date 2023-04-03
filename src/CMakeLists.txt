@@ -1,6 +1,6 @@
 add_subdirectory(main)
 add_subdirectory(common)
-add_subdirectory(eventloop)
+add_subdirectory(event)
 add_subdirectory(log)
 add_subdirectory(network)
 add_subdirectory(server)
@@ -12,7 +12,7 @@ add_executable(webserver ${ALL_OBJECT_FILES})
 set(WEBSERVER_LIBS
         webserver_main
         webserver_common
-        webserver_eventloop
+        webserver_event
         webserver_log
         webserver_network
         webserver_server
