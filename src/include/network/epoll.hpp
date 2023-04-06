@@ -8,7 +8,7 @@
 #pragma once
 
 #include "network/channel.hpp"
-#include "network/http_data.hpp"
+#include "network/http.hpp"
 #include "timer/timer.hpp"
 
 #include <sys/epoll.h>

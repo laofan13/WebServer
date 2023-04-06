@@ -3,7 +3,7 @@ add_library(
   OBJECT
   channel.cpp
   epoll.cpp
-  http_data.cpp
+  http.cpp
 )
 set(ALL_OBJECT_FILES
   ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:webserver_network>

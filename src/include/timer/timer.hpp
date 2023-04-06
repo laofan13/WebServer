@@ -7,7 +7,7 @@
 //===----------------------------------------------------------------------===//
 #pragma once
 
-#include "network/http_data.hpp"
+#include "network/http.hpp"
 #include "common/mutex_lock.hpp"
 #include "common/noncopyable.hpp"
 
